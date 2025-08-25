@@ -18,6 +18,15 @@
     <textarea id="entry" placeholder="What did you do today?"></textarea>
     <button id="saveBtn">Save Entry</button>
 
+    <div class="backup-controls">
+  <button id="downloadBtn">📥 Download Data</button>
+  <label class="upload-label">
+    📤 Upload Data
+    <input type="file" id="uploadInput" accept=".json" hidden />
+  </label>
+</div>
+
+
     <h2>Past Entries</h2>
     <div id="entriesList"></div>
   </div>
