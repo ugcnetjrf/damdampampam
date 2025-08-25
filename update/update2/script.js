@@ -98,3 +98,44 @@ if (localStorage.getItem('darkMode') === 'true') {
 
 // Initial load
 loadEntries();
+
+const downloadBtn = document.getElementById('downloadBtn');
+const uploadInput = document.getElementById('uploadInput');
+
+// 📥 Download all entries as a .json file
+downloadBtn.addEventListener('click', () => {
+  const entries = getEntries();
+  const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = daily-log-backup-${new Date().toISOString().split('T')[0]}.json;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
+
+// 📤 Upload a .json file to restore entries
+uploadInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const importedEntries = JSON.parse(text);
+
+    if (!Array.isArray(importedEntries)) throw new Error('Invalid format');
+
+    const confirmed = confirm("Do you want to replace your current entries with this upload?");
+    if (confirmed) {
+      saveEntries(importedEntries);
+      loadEntries(searchInput.value);
+      alert('Entries restored successfully!');
+    }
+  } catch (err) {
+    alert('Failed to import data. Make sure it’s a valid backup file.');
+    console.error(err);
+  }
+});
