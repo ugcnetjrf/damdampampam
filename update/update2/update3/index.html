@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Log</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📓 Daily Log</h1>
+      <button id="darkModeToggle"><i data-lucide="moon"></i></button>
+    </div>
+
+    <input type="text" id="searchInput" placeholder="🔍 Search entries..." />
+
+    <textarea id="entry" placeholder="What did you do today?"></textarea>
+    <button id="saveBtn"><i data-lucide="plus-circle"></i> Save Entry</button>
+
+    <div class="backup-controls">
+      <button id="downloadBtn"><i data-lucide="download"></i> Download</button>
+      <label for="uploadInput" class="upload-label">
+        <i data-lucide="upload"></i> Upload
+      </label>
+      <input type="file" id="uploadInput" accept=".json" hidden />
+    </div>
+
+    <h2><i data-lucide="book-open"></i> Past Entries</h2>
+    <div id="entriesList"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    lucide.createIcons(); // render all icons
+  </script>
+</body>
+</html>
