@@ -4,9 +4,6 @@ const entriesList = document.getElementById('entriesList');
 const searchInput = document.getElementById('searchInput');
 const darkModeToggle = document.getElementById('darkModeToggle');
 
-const downloadBtn = document.getElementById('downloadBtn');
-const uploadInput = document.getElementById('uploadInput');
-
 let editingIndex = null;
 
 function getEntries() {
@@ -27,24 +24,26 @@ function loadEntries(filter = '') {
     .filter(e => e.text.toLowerCase().includes(filter.toLowerCase()))
     .forEach(({ text, date }, index) => {
       const entryDiv = document.createElement('div');
-      entryDiv.className = 'entry';
+      entryDiv.className = 'entry-card';
       entryDiv.innerHTML = `
-        <small>${new Date(date).toLocaleString()}</small>
-        <p>${text}</p>
-        <div class="entry-actions">
-          <button class="edit-btn" data-index="${entries.length - 1 - index}">
-            <i data-lucide="pencil"></i> Edit
-          </button>
-          <button class="delete-btn" data-index="${entries.length - 1 - index}">
-            <i data-lucide="trash-2"></i> Delete
-          </button>
+        <div class="entry-header">
+          <small>${new Date(date).toLocaleString()}</small>
+          <div class="entry-actions">
+            <button class="edit-btn" data-index="${entries.length - 1 - index}" aria-label="Edit entry">
+              <i data-lucide="edit-3"></i>
+            </button>
+            <button class="delete-btn" data-index="${entries.length - 1 - index}" aria-label="Delete entry">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
         </div>
+        <p>${text}</p>
       `;
       entriesList.appendChild(entryDiv);
     });
 
+  lucide.createIcons(); // refresh icons for new elements
   bindEntryButtons();
-  refreshIcons();
 }
 
 function bindEntryButtons() {
@@ -54,8 +53,8 @@ function bindEntryButtons() {
       const entries = getEntries();
       entryInput.value = entries[index].text;
       editingIndex = index;
-      saveBtn.innerHTML = `<i data-lucide="check-circle"></i> Update Entry`;
-      refreshIcons();
+      saveBtn.innerHTML = `<i data-lucide="save"></i> Update Entry`;
+      lucide.createIcons();
     });
   });
 
@@ -80,8 +79,8 @@ saveBtn.addEventListener('click', () => {
     entries[editingIndex].text = text;
     entries[editingIndex].date = new Date().toISOString();
     editingIndex = null;
-    saveBtn.innerHTML = `<i data-lucide="plus-circle"></i> Save Entry`;
-    refreshIcons();
+    saveBtn.innerHTML = `<i data-lucide="save"></i> Save Entry`;
+    lucide.createIcons();
   } else {
     entries.push({ text, date: new Date().toISOString() });
   }
@@ -95,19 +94,24 @@ searchInput.addEventListener('input', () => {
   loadEntries(searchInput.value);
 });
 
-// 🌙 Dark Mode toggle
+// 🌙 Dark Mode
 darkModeToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-  refreshIcons();
 });
 
-// Apply saved dark mode preference
+// On load, apply saved dark mode preference
 if (localStorage.getItem('darkMode') === 'true') {
   document.body.classList.add('dark-mode');
 }
 
-// 📥 Download entries as .json
+// Initial load
+loadEntries();
+
+// 📥 Download all entries as a .json file
+const downloadBtn = document.getElementById('downloadBtn');
+const uploadInput = document.getElementById('uploadInput');
+
 downloadBtn.addEventListener('click', () => {
   const entries = getEntries();
   const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
@@ -122,7 +126,7 @@ downloadBtn.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-// 📤 Upload & restore entries
+// 📤 Upload a .json file to restore entries
 uploadInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -144,14 +148,3 @@ uploadInput.addEventListener('change', async (e) => {
     console.error(err);
   }
 });
-
-// 🔄 Refresh Lucide icons whenever DOM updates
-function refreshIcons() {
-  if (window.lucide) {
-    lucide.createIcons();
-  }
-}
-
-// Initial load
-loadEntries();
-refreshIcons();
