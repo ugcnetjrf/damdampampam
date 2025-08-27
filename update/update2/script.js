@@ -3,6 +3,8 @@ const saveBtn = document.getElementById('saveBtn');
 const entriesList = document.getElementById('entriesList');
 const searchInput = document.getElementById('searchInput');
 const darkModeToggle = document.getElementById('darkModeToggle');
+const downloadBtn = document.getElementById('downloadBtn');
+const uploadInput = document.getElementById('uploadInput');
 
 let editingIndex = null;
 
@@ -25,14 +27,14 @@ function loadEntries(filter = '') {
     .forEach(({ text, date }, index) => {
       const entryDiv = document.createElement('div');
       entryDiv.className = 'entry';
-      entryDiv.innerHTML = 
+      entryDiv.innerHTML = `
         <small>${new Date(date).toLocaleString()}</small>
         <p>${text}</p>
         <div class="entry-actions">
           <button class="edit-btn" data-index="${entries.length - 1 - index}">Edit</button>
           <button class="delete-btn" data-index="${entries.length - 1 - index}">Delete</button>
         </div>
-      ;
+      `;
       entriesList.appendChild(entryDiv);
     });
 
@@ -47,6 +49,7 @@ function bindEntryButtons() {
       entryInput.value = entries[index].text;
       editingIndex = index;
       saveBtn.textContent = 'Update Entry';
+      entryInput.focus();
     });
   });
 
@@ -85,7 +88,7 @@ searchInput.addEventListener('input', () => {
   loadEntries(searchInput.value);
 });
 
-// 🌙 Dark Mode
+// 🌙 Dark Mode toggle
 darkModeToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
@@ -94,13 +97,12 @@ darkModeToggle.addEventListener('click', () => {
 // On load, apply saved dark mode preference
 if (localStorage.getItem('darkMode') === 'true') {
   document.body.classList.add('dark-mode');
+} else {
+  document.body.classList.remove('dark-mode');
 }
 
 // Initial load
 loadEntries();
-
-const downloadBtn = document.getElementById('downloadBtn');
-const uploadInput = document.getElementById('uploadInput');
 
 // 📥 Download all entries as a .json file
 downloadBtn.addEventListener('click', () => {
@@ -110,7 +112,7 @@ downloadBtn.addEventListener('click', () => {
 
   const link = document.createElement('a');
   link.href = url;
-  link.download = daily-log-backup-${new Date().toISOString().split('T')[0]}.json;
+  link.download = `daily-log-backup-${new Date().toISOString().split('T')[0]}.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -126,7 +128,10 @@ uploadInput.addEventListener('change', async (e) => {
     const text = await file.text();
     const importedEntries = JSON.parse(text);
 
-    if (!Array.isArray(importedEntries)) throw new Error('Invalid format');
+    if (!Array.isArray(importedEntries) || 
+        !importedEntries.every(e => e.text && e.date)) {
+      throw new Error('Invalid format');
+    }
 
     const confirmed = confirm("Do you want to replace your current entries with this upload?");
     if (confirmed) {
