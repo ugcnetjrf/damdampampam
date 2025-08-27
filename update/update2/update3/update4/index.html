@@ -10,31 +10,45 @@
 </head>
 <body>
   <div class="container">
+    <!-- Header -->
     <div class="header">
       <h1>📓 Daily Log</h1>
-      <button id="darkModeToggle"><i data-lucide="moon"></i></button>
+      <button id="darkModeToggle" aria-label="Toggle dark mode">
+        <i data-lucide="moon"></i>
+      </button>
     </div>
 
-    <input type="text" id="searchInput" placeholder="🔍 Search entries..." />
+    <!-- Search -->
+    <input type="text" id="searchInput" placeholder="Search entries..." />
 
+    <!-- Entry field -->
     <textarea id="entry" placeholder="What did you do today?"></textarea>
-    <button id="saveBtn"><i data-lucide="plus-circle"></i> Save Entry</button>
+    <button id="saveBtn">
+      <i data-lucide="save"></i>
+      Save Entry
+    </button>
 
+    <!-- Backup controls -->
     <div class="backup-controls">
-      <button id="downloadBtn"><i data-lucide="download"></i> Download</button>
-      <label for="uploadInput" class="upload-label">
-        <i data-lucide="upload"></i> Upload
+      <button id="downloadBtn">
+        <i data-lucide="download"></i>
+        Download
+      </button>
+      <label class="upload-label">
+        <i data-lucide="upload"></i>
+        Upload
+        <input type="file" id="uploadInput" accept=".json" hidden />
       </label>
-      <input type="file" id="uploadInput" accept=".json" hidden />
     </div>
 
-    <h2><i data-lucide="book-open"></i> Past Entries</h2>
+    <!-- Past entries -->
+    <h2><i data-lucide="archive"></i> Past Entries</h2>
     <div id="entriesList"></div>
   </div>
 
   <script src="script.js"></script>
   <script>
-    lucide.createIcons(); // render all icons
+    lucide.createIcons();
   </script>
 </body>
 </html>
